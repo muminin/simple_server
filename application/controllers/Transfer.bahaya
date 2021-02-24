@@ -1,0 +1,57 @@
+
+<?php
+defined('BASEPATH') OR exit('No direct script access allowed');
+
+class Transfer extends CI_Controller {
+
+	public function index()
+	{
+		$kec = array('Kec. Kranggan' => 3, 'Kec. Magersari'=>2,'Kec. Prajurit Kulon' => 1);
+		$start  = 8000;
+		$idparent = 0;
+		$update = array();
+		$this->db->like('nama', 'kec.');
+		$query = $this->db->get('element');
+		foreach ($query->result() as $element) {
+
+
+
+			if ($idparent != $element->id_parent) {
+				$idparent= $element->id_parent;
+
+				$start= $start +10;
+			}
+
+			$perubahan[$start + ($kec[$element->nama])] =  $element->id;
+
+			$element->id = $start + ($kec[$element->nama]); 
+			$update[]=$element;
+		}
+		// update element dan hapus element lama
+		// teknik update menggunakan db update
+		foreach ($update as $el_update) {
+			$this->db->where('id', $perubahan[$el_update->id]);
+			$this->db->update('element', $el_update);
+		}
+
+
+		// update nilai pada tahun ken
+		// tabel tahun berelasi dengan data elemen melalui kolom id
+		foreach ($perubahan as $sesudah => $sebelum) {
+			// amvbil data di tahun di database terlebih dahulu
+			$this->db->where('id_element', $sebelum);
+			$query = $this->db->get('data_thn');
+			foreach ($query->result()as $update_tahun) {
+				$update_tahun->id_element = $sesudah;
+				$this->db->where('id_element', $sebelum);
+				$this->db->where('tahun', $update_tahun->tahun);
+				$this->db->update('data_thn',$update_tahun);
+			}
+		}
+
+	}
+
+}
+
+/* End of file Transfer.php */
+/* Location: ./application/controllers/Transfer.php */

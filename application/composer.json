@@ -1,0 +1,12 @@
+{
+    "name": "developer/application",
+    "authors": [
+        {
+            "name": "muminin",
+            "email": "aka_as@ymail.com"
+        }
+    ],
+    "require": {
+          "chriskonnertz/string-calc": "1.*"
+    }
+}
